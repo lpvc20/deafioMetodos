@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DESAFIO MÉTODOS NUMÉRICOS - Integración numérica · La Paz</title>
+<style>
+:root{--bg:#f4f6f8;--sf:#fff;--tx:#1b2430;--mu:#5d6b7c;--ac:#0b6e99;--bd:#d9dee5;--ok:#15803d;--er:#b91c1c;--cd:#e9eff4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f151c;--sf:#18212b;--tx:#e6ebf0;--mu:#93a1b1;--ac:#5cc0ea;--bd:#2b3948;--ok:#4ade80;--er:#f87171;--cd:#1f2b37}}
+:root[data-theme="dark"]{--bg:#0f151c;--sf:#18212b;--tx:#e6ebf0;--mu:#93a1b1;--ac:#5cc0ea;--bd:#2b3948;--ok:#4ade80;--er:#f87171;--cd:#1f2b37}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:18px 16px 8px;max-width:1100px;margin:auto}h1{font-size:21px;margin:0}header p{margin:2px 0;color:var(--mu);font-size:13px}
+nav{display:flex;gap:6px;flex-wrap:wrap;max-width:1100px;margin:6px auto;padding:0 16px}
+nav button,.b{background:var(--sf);border:1px solid var(--bd);color:var(--tx);padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit}
+nav button.on,.b.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{max-width:1100px;margin:auto;padding:8px 16px 40px}section{display:none}section.on{display:block}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:10px 0}
+.g{display:grid;grid-template-columns:230px 1fr;gap:12px}@media(max-width:760px){.g{grid-template-columns:1fr}}
+.ex button{display:block;width:100%;text-align:left;margin:3px 0}
+.ex button.on{border-color:var(--ac);background:var(--cd)}
+label{font-size:12px;color:var(--mu);display:block;margin-top:8px}
+input,select,textarea{width:100%;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;font:13px ui-monospace,Menlo,Consolas,monospace}
+.r{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}@media(max-width:600px){.r{grid-template-columns:1fr 1fr}}
+.sc{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid var(--bd);padding:5px 8px;text-align:right;white-space:nowrap}th{background:var(--cd)}td:first-child,th:first-child{text-align:left}
+.er{color:var(--er);font-weight:600}.ok{color:var(--ok);font-weight:600}.mu{color:var(--mu);font-size:12px}
+.pill{display:inline-block;background:var(--cd);border-radius:99px;padding:1px 8px;font-size:12px;margin:2px 4px 2px 0}
+svg{width:100%;height:auto;background:var(--sf);border:1px solid var(--bd);border-radius:8px}
+</style></head><body>
+<header><h1>DESAFIO - Integración numérica aplicada a La Paz, Bolivia</h1>
+<p>Métodos Numéricos ·  Ejercicios 19 al 27</p>
+<P> INTEGRANTES:  </P>
+<ul> 
+	<li> Gustavo Winsor Pomacusi Tenorio</li>
+	<li> Julio Jhoel Viscarra Chuca</li>
+	<li> Leonel Pablo Viscarra Chavez</li>
+</ul>
+<p> EJERCICIOS DEL 19 AL 27</p></header>
+<nav id="nav"></nav>
+<main>
+<section id="s0" class="on">
+<div class="g"><div class="card ex" id="exl"></div>
+<div>
+<div class="card"><b id="et"></b><div class="mu" id="ed"></div>
+<div class="r"><div><label>Modo de ingreso</label><select id="mode"><option value="tab">Tabla x,y</option><option value="fn">Función f(x), a, b, n</option></select></div>
+<div id="vw"><label>Magnitud</label><select id="vs"></select></div>
+<div><label>Método para pesos / conversiones</label><select id="ms"><option value="T">Trapecio</option><option value="S13">Simpson 1/3</option><option value="S38">Simpson 3/8</option><option value="MIX" selected>Combinado (1/3 + 3/8)</option><option value="S13T">Simpson 1/3 + trapecio final</option></select></div></div>
+<div id="tb"><label>Pares x,y (uno por línea, o separados por «;»). Unidades: <span id="un"></span></label><textarea id="ta" rows="7"></textarea></div>
+<div id="fb" hidden><div class="r"><div style="grid-column:span 2"><label>f(x) — usar x, pi, e, sin, cos, sinh, cosh, sqrt, exp, log, ^</label><input id="ff"></div><div><label>a</label><input id="fa"></div><div><label>b</label><input id="fb2"></div><div><label>n (subintervalos)</label><input id="fn"></div></div></div>
+<p><button class="b p" id="go">Calcular</button> <span class="mu">h = (b−a)/n con nodos equiespaciados</span></p></div>
+<div id="out"></div></div></div></section>
+<section id="s1"><div class="card"><b>Matriz resumida de respuestas</b><div class="mu">Se calcula en vivo con los datos y n por defecto; se compara contra los valores del solucionario.</div><div class="sc" id="sum"></div></div></section>
+<section id="s2"><div class="card"><b>Pruebas automáticas</b> <span class="mu">(validación f(x)=x² en [0,2] con integral 8/3, manejo de errores y contraste con el solucionario)</span><div id="tests" class="sc"></div></div></section>
+<section id="s3"><div class="card"><b>Arquitectura y requisitos</b>
+<p><span class="pill">UI</span> entradas, tablas, gráfico → <span class="pill">Validación</span> contratos (códigos E-xx) → <span class="pill">Núcleo</span> funciones puras <code>weights()</code> e <code>integrate()</code> → <span class="pill">Pruebas</span> casos automáticos. Complejidad O(n) en tiempo y memoria; aritmética IEEE-754 doble precisión.</p>
+<div class="sc"><table><tr><th>Req.</th><th>Requisito del documento</th><th>Módulo</th></tr>
+<tr><td>RF-1</td><td>Ingreso de pares x,y o f(x), a, b, n</td><td>parseTab, parseFn</td></tr>
+<tr><td>RF-2</td><td>Trapecio, Simpson 1/3, 3/8; validar espaciamiento y n</td><td>weights, uniform</td></tr>
+<tr><td>RF-3</td><td>Resultados con unidades, ≥6 decimales, tabla de pesos</td><td>render, fmt</td></tr>
+<tr><td>RF-4</td><td>Comparación de métodos y gráfico del área</td><td>render, chart</td></tr>
+<tr><td>RF-5</td><td>Errores: listas desiguales, x no creciente, no numérico, n incompatible</td><td>E-T1…E-N2</td></tr>
+<tr><td>RF-6</td><td>Prueba x² en [0,2] = 8/3</td><td>pestaña Pruebas</td></tr></table></div>
+<p class="mu">Códigos: E-T1 lista desigual · E-T2 dato no numérico · E-T3 x no creciente · E-T4 espaciado no uniforme · E-N1 n inválido · E-N2 n incompatible con el método · E-F1…F4 función inválida. Orden del error: trapecio O(h²), Simpson O(h⁴) si f es suficientemente suave; en el ejercicio 23 la derivada de (1−r/R)^(1/7) diverge en r=R y la convergencia es más lenta.</p></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),PI=Math.PI;
+const NM={T:'Trapecio compuesto',S13:'Simpson 1/3',S38:'Simpson 3/8',MIX:'Combinado 1/3 + 3/8',S13T:'Simpson 1/3 + trapecio'};
+const dd=(y,x)=>{const r=y.map(d=>d/2);return r.map((v,i)=>{const s=i==0?(r[1]-r[0])/(x[1]-x[0]):i==r.length-1?(v-r[i-1])/(x[i]-x[i-1]):(r[i+1]-r[i-1])/(x[i+1]-x[i-1]);return 2*PI*v*Math.sqrt(1+s*s)})};
+const EX=[
+{id:19,t:'Transporte urbano',d:'d = ∫₀⁷ v(t) dt; se divide entre 3600 para pasar de mi/h·s a mi.',k:'tab',x:[0,1,2,3,4,5,6,7],y:[0,14,39,69,95,114,129,139],xu:'t (s), v (mi/h)',iu:'mi/h·s',post:I=>[['Distancia',I/3600,'mi'],['Distancia',I/3600*1609.344,'m']],pf:I=>I/3600,exp:[0.147083,0.147072]},
+{id:20,t:'Ensayo de elasticidad',d:'W = ∫₀²·⁸ F(x) dx.',k:'tab',x:[0,.4,.8,1.2,1.6,2,2.4,2.8],y:[0,.85,1.3,1.6,1.87,2.14,2.34,2.52],xu:'x (in), F (lb)',iu:'lb·in',post:I=>[['Trabajo',I,'lb·in'],['Trabajo',I*0.112984829,'J']],exp:[4.544,4.577167]},
+{id:21,t:'Perfil topográfico',d:'Área bajo el perfil entre x=1 y x=10. Datos digitalizados ILUSTRATIVOS (no exactos): acordar una tabla común en el grupo.',k:'tab',x:[1,2,3,4,5,6,7,8,9,10],y:[1.3,3.7,4.6,4.4,2.7,2.5,3.6,5.3,6,5.9],xu:'x, y (u)',iu:'u²',exp:[36.40,36.85],sm:'S13T'},
+{id:22,t:'Cable suspendido (catenaria)',d:'L = ∫₋₁₂²⁶ √(1+sinh²(x/24)) dx, a=24 ft. Modelo geométrico simplificado, no cálculo del teleférico.',k:'fn',f:'sqrt(1+sinh(x/24)^2)',a:-12,b:26,n:8,iu:'ft',ref:43.898841,exp:[44.042044,43.899213]},
+{id:23,t:'Caudal en tubería',d:'Q = ∫₀ᴿ 2πr·80(1−r/R)^(1/7) dr, R=0.25 in. Exacto 49π/12.',k:'fn',f:'160*pi*x*(1-x/0.25)^(1/7)',a:0,b:.25,n:8,iu:'in³/s',ref:49*PI/12,exp:[11.681778,12.151244]},
+{id:24,t:'Trayectoria cardioide',d:'L = ∫₀²π √(x′²+y′²) dt con b=5; x=2b cos t − b cos 2t, y=2b sin t − b sin 2t. Exacto 80.',k:'fn',f:'sqrt((-10*sin(x)+10*sin(2*x))^2+(10*cos(x)-10*cos(2*x))^2)',a:0,b:2*PI,n:8,iu:'u',ref:80,exp:[78.969264,80.010767]},
+{id:25,t:'Energía gravitatoria',d:'ΔU = ∫₀ʰ m g₀ R²/(R+y)² dy, m=500 kg, h=800 km. Exacto m g₀ R h/(R+h).',k:'fn',f:'500*9.81*6371000^2/(6371000+x)^2',a:0,b:8e5,n:8,iu:'J',ref:3.486236787e9,exp:[3.48662008e9,3.4862369e9]},
+{id:26,t:'Superficie de lago (Erie → Titicaca)',d:'A = ∫₄₀²⁶⁰ w(x) dx, anchos cada 20 mi; referencia 9 940 mi². Anchos ILUSTRATIVOS (digitalizar del mapa). Adaptación Titicaca: ingresar anchos tomados de un mapa y comparar con el área publicada (aprox. 8 300 km², según la fuente).',k:'tab',x:[40,60,80,100,120,140,160,180,200,220,240,260],y:[30,46,50,53,56,55,52,47,43,38,30,18],xu:'x (mi), w (mi)',iu:'mi²',ref:9940},
+{id:27,t:'Objeto alargado (balón)',d:'r=d/2. V=π∫r²dz. La fórmula S=2π∫r dz omite la pendiente; el área real de revolución es 2π∫r√(1+r′²)dz (r′ por diferencias finitas).',k:'tab',x:[0,1,2,3,4,5,6,7,8,9,10,11,12],y:[0,2.6,3.2,4.8,5.6,6,6.2,6,5.6,4.8,3.3,2.6,0],xu:'z (in), d (in)',iu:'in³',exp:[199.40474,201.842092],
+ v:[['Volumen V = π∫r²dz',(y)=>y.map(d=>PI*(d/2)**2),'in³'],['S simplificada 2π∫r dz',(y)=>y.map(d=>PI*d),'in²'],['Área de revolución 2π∫r√(1+r′²)dz',dd,'in²']]},
+{id:'V',t:'Validación f(x)=x²',d:'Prueba obligatoria: integral exacta 8/3 en [0,2].',k:'fn',f:'x^2',a:0,b:2,n:6,iu:'u',ref:8/3}];
+/* ---- parser de funciones (sin eval) ---- */
+function parseFn(s){const F={sin:Math.sin,cos:Math.cos,tan:Math.tan,sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,sqrt:Math.sqrt,exp:Math.exp,log:Math.log,ln:Math.log,abs:Math.abs,asin:Math.asin,acos:Math.acos,atan:Math.atan};
+if(!s.trim())throw Error('E-F1: función vacía');
+const t=s.toLowerCase().match(/\d*\.?\d+(?:e[+-]?\d+)?|[a-z]+|[-+*\/^(),]|\S/g)||[];let p=0;const pk=()=>t[p],nx=()=>t[p++];
+function ex(){let l=tm();while(pk()=='+'||pk()=='-'){const o=nx(),r=tm(),a=l;l=o=='+'?x=>a(x)+r(x):x=>a(x)-r(x)}return l}
+function tm(){let l=un();while(pk()=='*'||pk()=='/'){const o=nx(),r=un(),a=l;l=o=='*'?x=>a(x)*r(x):x=>a(x)/r(x)}return l}
+function un(){if(pk()=='-'){nx();const a=un();return x=>-a(x)}if(pk()=='+'){nx();return un()}return pw()}
+function pw(){const b=at();if(pk()=='^'){nx();const e=un();return x=>Math.pow(b(x),e(x))}return b}
+function at(){const k=nx();if(k===undefined)throw Error('E-F4: expresión incompleta');
+if(/^\.?\d/.test(k)){const v=parseFloat(k);return()=>v}
+if(k=='('){const a=ex();if(nx()!=')')throw Error('E-F4: falta «)»');return a}
+if(k=='x')return x=>x;if(k=='pi')return()=>PI;if(k=='e')return()=>Math.E;
+if(F[k]){if(nx()!='(')throw Error('E-F4: «'+k+'» requiere paréntesis');const a=ex();if(nx()!=')')throw Error('E-F4: falta «)»');return x=>F[k](a(x))}
+throw Error('E-F2: símbolo no permitido «'+k+'» (no hay multiplicación implícita)')}
+const f=ex();if(p<t.length)throw Error('E-F4: sobra «'+t[p]+'»');return f}
+/* ---- validación ---- */
+function parseTab(s){const L=s.split(/\n|;/).map(l=>l.trim()).filter(Boolean),xs=[],ys=[];
+L.forEach((l,i)=>{const p=l.split(/[,\s\t]+/).filter(Boolean);if(p.length!=2)throw Error('E-T1: listas desiguales; la línea '+(i+1)+' no tiene exactamente un par x,y');
+const a=+p[0],b=+p[1];if(!isFinite(a)||!isFinite(b)||p.some(v=>v===''||isNaN(Number(v))))throw Error('E-T2: dato no numérico en la línea '+(i+1));xs.push(a);ys.push(b)});
+if(xs.length<2)throw Error('E-T1: se requieren al menos 2 puntos');
+for(let i=1;i<xs.length;i++)if(!(xs[i]>xs[i-1]))throw Error('E-T3: x no es estrictamente creciente en la fila '+(i+1));
+const h=(xs.at(-1)-xs[0])/(xs.length-1);xs.forEach((v,i)=>{if(Math.abs(v-(xs[0]+i*h))>1e-9*Math.max(1,Math.abs(h))*10)throw Error('E-T4: espaciado no uniforme en la fila '+(i+1)+' (h esperado '+h+')')});
+return{xs,ys}}
+/* ---- núcleo numérico ---- */
+function weights(m,n){if(!Number.isInteger(n)||n<1)throw Error('E-N1: n debe ser entero ≥ 1');const c=Array(n+1).fill(0);
+const a13=(s,e)=>{for(let i=s;i<=e;i++)c[i]+=((i==s||i==e)?1:(i-s)%2?4:2)/3},a38=(s,e)=>{for(let i=s;i<=e;i++)c[i]+=3*((i==s||i==e)?1:(i-s)%3?3:2)/8},aT=(s,e)=>{for(let i=s;i<=e;i++)c[i]+=(i==s||i==e)?.5:1};
+if(m=='T')aT(0,n);
+else if(m=='S13'){if(n%2)throw Error('E-N2: Simpson 1/3 requiere n par (n='+n+')');a13(0,n)}
+else if(m=='S38'){if(n%3)throw Error('E-N2: Simpson 3/8 requiere n múltiplo de 3 (n='+n+')');a38(0,n)}
+else if(m=='MIX'){if(n%2==0)a13(0,n);else{if(n<3)throw Error('E-N2: el combinado requiere n≥2');if(n>3)a13(0,n-3);a38(n-3,n)}}
+else if(m=='S13T'){if(n%2==0||n<3)throw Error('E-N2: 1/3 + trapecio requiere n impar ≥ 3');a13(0,n-1);aT(n-1,n)}
+return c}
+const integrate=(y,h,m)=>{const c=weights(m,y.length-1);return h*c.reduce((s,w,i)=>s+w*y[i],0)};
+function dataFor(ex,vi=0,n=ex.n,o={}){if(ex.k=='tab'){const{xs,ys}=o.tab||{xs:ex.x,ys:ex.y};const y=ex.v?ex.v[vi][1](ys,xs):ys;return{xs,ys:y,n:xs.length-1,h:(xs.at(-1)-xs[0])/(xs.length-1)}}
+const f=parseFn(o.f??ex.f),a=o.a??ex.a,b=o.b??ex.b;if(!(isFinite(a)&&isFinite(b)&&a<b))throw Error('E-N1: se requiere a < b');if(!Number.isInteger(n)||n<1)throw Error('E-N1: n debe ser entero ≥ 1');
+const h=(b-a)/n,xs=[...Array(n+1)].map((_,i)=>a+i*h),ys=xs.map(f);if(ys.some(v=>!isFinite(v)))throw Error('E-F5: f(x) no finita en algún nodo');return{xs,ys,n,h,f}}
+const fmt=(v,d=6)=>!isFinite(v)?'—':Math.abs(v)>=1e8?v.toExponential(9):v.toFixed(d);
+/* ---- UI ---- */
+let cur=EX[0];
+const nav=$('#nav');['Calculadora','Resumen','Pruebas','Arquitectura'].forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.className=i?'':'on';b.onclick=()=>{[...nav.children].forEach((x,j)=>{x.classList.toggle('on',i==j);$('#s'+j).classList.toggle('on',i==j)});if(i==1)summary();if(i==2)tests()};nav.append(b)});
+EX.forEach(e=>{const b=document.createElement('button');b.className='b';b.textContent=(e.id=='V'?'✓ ':'Ej. '+e.id+' · ')+e.t;b.onclick=()=>pick(e);b._e=e;$('#exl').append(b)});
+function pick(e){cur=e;[...$('#exl').children].forEach(b=>b.classList.toggle('on',b._e==e));$('#et').textContent=(e.id=='V'?'':'Ejercicio '+e.id+' · ')+e.t;$('#ed').textContent=e.d;
+$('#mode').value=e.k;$('#vw').hidden=!e.v;if(e.v)$('#vs').innerHTML=e.v.map((v,i)=>`<option value="${i}">${v[0]}</option>`).join('');
+$('#ta').value=e.x?e.x.map((x,i)=>x+', '+e.y[i]).join('\n'):'0, 0\n1, 1\n2, 4\n3, 9\n4, 16';$('#un').textContent=e.xu||'x, y';
+$('#ff').value=e.f||'x^2';$('#fa').value=e.a??0;$('#fb2').value=e.b??2;$('#fn').value=e.n??6;$('#ms').value=e.sm||'MIX';modeUI();run()}
+function modeUI(){const t=$('#mode').value=='tab';$('#tb').hidden=!t;$('#fb').hidden=t}
+$('#mode').onchange=()=>{modeUI();run()};$('#go').onclick=run;$('#ms').onchange=run;$('#vs').onchange=run;
+function run(){const o=$('#out');try{let d,vi=+($('#vs').value||0);
+if($('#mode').value=='tab'){const t=parseTab($('#ta').value);d=dataFor(cur.k=='tab'?cur:{k:'tab'},vi,0,{tab:t})}
+else{const num=(s,nm)=>{if(String(s).trim()===''||isNaN(Number(s)))throw Error('E-T2: «'+nm+'» no es numérico');return Number(s)};
+const pa=cur.k=='fn'?cur:{k:'fn'};d=dataFor(pa,0,num($('#fn').value,'n'),{f:$('#ff').value,a:evalNum($('#fa').value),b:evalNum($('#fb2').value)})}
+render(d,vi)}catch(e){o.innerHTML='<div class="card er">⚠ '+e.message+'</div>'}}
+const evalNum=s=>{if(String(s).trim()==='')throw Error('E-T2: límite vacío');return parseFn(String(s))(0)};
+function render(d,vi){const u=cur.v?cur.v[vi][2]:cur.iu,ref=cur.v?null:cur.ref,{xs,ys,n,h}=d,ms=$('#ms').value;
+let rows='',vals={};Object.keys(NM).forEach(m=>{try{const I=integrate(ys,h,m);vals[m]=I;
+rows+=`<tr><td>${NM[m]}</td><td>${fmt(I)}</td><td>${cur.v||!cur.iu?u:cur.iu}</td><td>${ref!=null?fmt(Math.abs(ref-I)):'—'}</td><td>${ref!=null?fmt(100*Math.abs(ref-I)/Math.abs(ref),4)+' %':'—'}</td></tr>`}catch(e){rows+=`<tr><td>${NM[m]}</td><td colspan="4" class="mu" style="text-align:left">No aplicable: ${e.message}</td></tr>`}});
+let post='';if(cur.post&&vals[ms]!=null)post='<p>'+cur.post(vals[ms]).map(p=>`<span class="pill"><b>${p[0]}</b> = ${fmt(p[1])} ${p[2]}</span>`).join('')+'</p>';
+let wt;try{const c=weights(ms,n);wt=`<table><tr><th>i</th><th>xᵢ</th><th>fᵢ</th><th>peso cᵢ</th><th>h·cᵢ·fᵢ</th></tr>`+xs.map((x,i)=>`<tr><td>${i}</td><td>${fmt(x)}</td><td>${fmt(ys[i])}</td><td>${fmt(c[i],6)}</td><td>${fmt(h*c[i]*ys[i])}</td></tr>`).join('')+'</table>'}catch(e){wt='<span class="er">'+e.message+'</span>'}
+$('#out').innerHTML=`<div class="card"><b>Parámetros</b><br><span class="pill">n = ${n}</span><span class="pill">h = ${fmt(h)}</span><span class="pill">a = ${fmt(xs[0])}</span><span class="pill">b = ${fmt(xs.at(-1))}</span>${ref!=null?`<span class="pill">I_ref = ${fmt(ref)} ${u}</span>`:'<span class="pill">Sin valor de referencia: no se calcula error verdadero</span>'}</div>
+<div class="card"><b>Resultados y comparación de métodos</b><div class="sc"><table><tr><th>Método</th><th>Aproximación</th><th>Unidad</th><th>Error absoluto</th><th>Error %</th></tr>${rows}</table></div>${post}</div>
+<div class="card"><b>Gráfico del área</b>${chart(d)}</div>
+<div class="card"><b>Tabla de factores / pesos — ${NM[ms]}</b><div class="sc">${wt}</div></div>`}
+function chart({xs,ys,f}){const W=640,H=260,m=36;let px=xs,py=ys;if(f){const a=xs[0],b=xs.at(-1);px=[...Array(201)].map((_,i)=>a+(b-a)*i/200);py=px.map(f)}
+const x0=Math.min(...px),x1=Math.max(...px),y0=Math.min(0,...py),y1=Math.max(0,...py)||1,X=v=>m+(v-x0)/(x1-x0||1)*(W-2*m),Y=v=>H-m-(v-y0)/((y1-y0)||1)*(H-2*m);
+const pts=px.map((v,i)=>X(v)+','+Y(py[i])).join(' ');
+return`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de datos y área bajo la curva"><polygon points="${X(px[0])},${Y(0)} ${pts} ${X(px.at(-1))},${Y(0)}" fill="var(--ac)" opacity=".25"/><line x1="${m}" x2="${W-m}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--mu)"/><polyline points="${pts}" fill="none" stroke="var(--ac)" stroke-width="2"/>${xs.map((v,i)=>`<circle cx="${X(v)}" cy="${Y(ys[i])}" r="3" fill="var(--ac)"/>`).join('')}<g fill="var(--mu)" font-size="11"><text x="${m}" y="${H-10}">${fmt(x0,3)}</text><text x="${W-m}" y="${H-10}" text-anchor="end">${fmt(x1,3)}</text><text x="4" y="${m}">${fmt(y1,3)}</text></g></svg>`}
+function summary(){let h='<table><tr><th>Ejercicio</th><th>Trapecio</th><th>Simpson / combinado</th><th>Ref. exacta</th><th>Solucionario (T / S)</th><th>Concuerda</th></tr>';
+EX.filter(e=>e.id!='V').forEach(e=>{try{const d=dataFor(e,0),T=integrate(d.ys,d.h,'T'),S=integrate(d.ys,d.h,e.sm||'MIX'),pf=e.pf||(x=>x),ok=e.exp?[T,S].every((v,i)=>Math.abs(pf(v)-e.exp[i])<=1e-5*Math.abs(e.exp[i])+1e-9):null;
+h+=`<tr><td>${e.id} · ${e.t}</td><td>${fmt(pf(T))}</td><td>${fmt(pf(S))}</td><td>${e.ref!=null?fmt(e.ref):'—'}</td><td>${e.exp?e.exp.join(' / '):'depende de anchuras'}</td><td>${ok==null?'—':ok?'<span class="ok">✔</span>':'<span class="er">✘</span>'}</td></tr>`}catch(x){h+=`<tr><td>${e.id}</td><td colspan="5" class="er">${x.message}</td></tr>`}});
+$('#sum').innerHTML=h+'</table><p class="mu">Ej. 19: mi · 20: lb·in · 21: u² (datos estimados) · 22: ft · 23: in³/s · 24: u · 25: J · 26: mi² · 27: in³ (n=12, Simpson 1/3). Con 8 subintervalos en 22–25.</p>'}
+function tests(){const T=[],t=(n,f)=>{let ok=false,m='';try{ok=f()}catch(e){m=e.message}T.push([n,ok,m])},
+thr=(f,c)=>{try{f()}catch(e){return e.message.startsWith(c)}return false},cl=(a,b)=>Math.abs(a-b)<1e-9,ys=(n)=>{const h=2/n;return[...Array(n+1)].map((_,i)=>(i*h)**2)};
+t('x² [0,2], n=2, Simpson 1/3 = 8/3 (exacto)',()=>cl(integrate(ys(2),1,'S13'),8/3));
+t('x² [0,2], n=4, trapecio = 2.75',()=>cl(integrate(ys(4),.5,'T'),2.75));
+t('x² [0,2], n=3, Simpson 3/8 = 8/3 (exacto)',()=>cl(integrate(ys(3),2/3,'S38'),8/3));
+t('x² [0,2], n=7, combinado = 8/3',()=>cl(integrate(ys(7),2/7,'MIX'),8/3));
+t('Simpson 1/3 con n=5 se rechaza (E-N2)',()=>thr(()=>weights('S13',5),'E-N2'));
+t('Simpson 3/8 con n=4 se rechaza (E-N2)',()=>thr(()=>weights('S38',4),'E-N2'));
+t('n=0 se rechaza (E-N1)',()=>thr(()=>weights('T',0),'E-N1'));
+t('Listas desiguales (E-T1)',()=>thr(()=>parseTab('0,1\n1\n2,3'),'E-T1'));
+t('Dato no numérico (E-T2)',()=>thr(()=>parseTab('0,1\n1,abc'),'E-T2'));
+t('x no creciente (E-T3)',()=>thr(()=>parseTab('0,1\n2,3\n1,4'),'E-T3'));
+t('Espaciado no uniforme (E-T4)',()=>thr(()=>parseTab('0,1\n1,2\n3,4'),'E-T4'));
+t('Función inválida (E-F2)',()=>thr(()=>parseFn('system(x)'),'E-F2'));
+t('Parser: -x^2 + 2*pi en x=1 ≈ 5.2832',()=>Math.abs(parseFn('-x^2+2*pi')(1)-(2*PI-1))<1e-12);
+EX.filter(e=>e.exp&&e.id!='V').forEach(e=>t('Solucionario ej. '+e.id+' (trapecio y Simpson)',()=>{const d=dataFor(e,0),pf=e.pf||(x=>x);return[integrate(d.ys,d.h,'T'),integrate(d.ys,d.h,e.sm||'MIX')].every((v,i)=>Math.abs(pf(v)-e.exp[i])<=1e-5*Math.abs(e.exp[i])+1e-9)}));
+const p=T.filter(x=>x[1]).length;$('#tests').innerHTML=`<p><b class="${p==T.length?'ok':'er'}">${p}/${T.length} pruebas aprobadas</b></p><table>`+T.map(x=>`<tr><td>${x[0]}</td><td class="${x[1]?'ok':'er'}">${x[1]?'APROBADA':'FALLÓ '+x[2]}</td></tr>`).join('')+'</table>'}
+pick(EX[0]);
+</script></body></html>
